@@ -188,7 +188,7 @@ lib/plexi submodule or add the the command line argument
       <fileset dir="${lib.dir}" includes="${tmp.adaptor.fileset}"/>
     </copy>
 
-    <!-- adaptor-ad-withlib.jar -->
+    <!-- adaptor-ldap-withlib.jar -->
     <jar filesetmanifest="mergewithoutmain"
       destfile="${dist.staging.dir}/adaptor-ldap${adaptor.suffix}-withlib.jar">
       <zipfileset
