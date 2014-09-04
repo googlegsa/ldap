@@ -40,6 +40,7 @@
 
   <path id="adaptor.run.classpath">
     <path refid="adaptor.build.classpath"/>
+    <pathelement location="${resource.dir}"/>
   </path>
 
   <path id="cobertura.classpath">
@@ -173,6 +174,7 @@ lib/plexi submodule or add the the command line argument
             value="${adaptor.version}"/>
         </section>
       </manifest>
+      <fileset dir="${resource.dir}"/>
     </jar>
 
     <!-- lib/ -->
@@ -249,6 +251,7 @@ lib/plexi submodule or add the the command line argument
       <classpath location="${build-instrument.dir}"/>
       <classpath location="${build-src.dir}"/>
       <classpath location="${build-test.dir}"/>
+      <classpath location="${resource.dir}"/>
       <formatter type="plain" usefile="false"/>
       <formatter classname="JUnitLogFixFormatter" usefile="false"/>
       <batchtest>
