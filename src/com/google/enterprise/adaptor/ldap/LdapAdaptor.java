@@ -194,7 +194,7 @@ public class LdapAdaptor extends AbstractAdaptor {
       String principal, String passwd, String baseDN, String userFilter,
       String attributes, String globalNamespace, String localNamespace,
       int docsPerMinute, boolean disableTraversal, long ldapTimeoutInMillis,
-      String displayTemplate) throws StartupException {
+      String displayTemplate) {
     return new LdapServer(host, nick, method, port, principal, passwd, baseDN,
         userFilter, attributes, globalNamespace, localNamespace, docsPerMinute,
         disableTraversal, ldapTimeoutInMillis, displayTemplate);
@@ -486,7 +486,8 @@ public class LdapAdaptor extends AbstractAdaptor {
       this.code = code;
     }
 
-    public void setMessage(String messageAsString) {
+    @VisibleForTesting
+    void setMessage(String messageAsString) {
       this.messageAsString = messageAsString;
     }
 
@@ -496,6 +497,32 @@ public class LdapAdaptor extends AbstractAdaptor {
         return messageAsString;
       }
       return message == null ? null : message.toString(locale, params);
+    }
+
+    @Override
+    public boolean equals(Object otherTranslationStatus) {
+      if (otherTranslationStatus instanceof TranslationStatus) {
+        TranslationStatus other = (TranslationStatus) otherTranslationStatus;
+        if (!getCode().equals(other.getCode())) {
+          return false;
+        }
+        String myMessage = getMessage(Locale.getDefault());
+        String otherMessage = other.getMessage(Locale.getDefault());
+        if (myMessage == null) {
+          return (otherMessage == null);
+        }
+        return myMessage.equals(otherMessage);
+      }
+      return false;
+    }
+
+    @Override
+    public int hashCode() {
+      // to insure that a TranslationStatus object with only message/params
+      // specified matches one with messageAsString specified, we call
+      // getMessage() to force the messageAsString variable to be set.
+      String ignored = getMessage(Locale.getDefault());
+      return Arrays.hashCode(new Object[] {code, messageAsString});
     }
   }
 

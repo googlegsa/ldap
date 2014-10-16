@@ -77,8 +77,7 @@ class LdapServer {
       int port, String principal, String password, String baseDN,
       String userFilter, String attributes, String globalNamespace,
       String localNamespace, int traversalRate, boolean disableTraversal,
-      long ldapTimeoutInMillis, String displayTemplate)
-      throws StartupException {
+      long ldapTimeoutInMillis, String displayTemplate) {
     this(hostName, nickName, baseDN, userFilter, attributes, globalNamespace,
         localNamespace, traversalRate, disableTraversal, displayTemplate,
         createLdapContext(hostName, connectMethod, port, principal, password,
@@ -115,7 +114,7 @@ class LdapServer {
    */
   private static LdapContext createLdapContext(String hostName,
       Method connectMethod, int port, String principal, String password,
-      long ldapTimeoutInMillis) throws StartupException {
+      long ldapTimeoutInMillis) {
     Hashtable<String, String> env = new Hashtable<String, String>();
     if (null == connectMethod || null == hostName
         || null == principal || null == password) {
@@ -188,7 +187,7 @@ class LdapServer {
   }
 
   @VisibleForTesting
-  void recreateLdapContext() throws StartupException {
+  void recreateLdapContext() {
     ldapContext = createLdapContext(hostName, connectMethod, port, principal,
         password, ldapTimeoutInMillis);
   }
@@ -416,7 +415,7 @@ class LdapServer {
     } else {
       log.exiting("LdapServer", "fetchOne", 2);
       throw new IllegalArgumentException("More than one person found at "
-          + dn);
+          + dn + " : " + results.size() + " results.");
     }
   }
 
