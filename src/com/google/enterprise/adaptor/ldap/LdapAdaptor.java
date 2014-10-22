@@ -83,7 +83,13 @@ public class LdapAdaptor extends AbstractAdaptor {
   public void init(AdaptorContext context) throws Exception {
     Config config = context.getConfig();
     defaultNamespace = config.getValue("adaptor.namespace");
-    log.config("default namespace: " + defaultNamespace);
+    /*
+     * The trailing <code>+ ""</code> (which really does nothing at runtime)
+     * is a workaround to a Cobertura bug that would otherwise mark the line of
+     * code as only being 50% tested.  This occurs in approximately one dozen
+     * places throughout this file.
+     */
+    log.config("default namespace: " + defaultNamespace + "");
     ldapTimeoutInMillis = parseReadTimeoutInMillis(
         config.getValue("ldap.readTimeoutSecs"));
 
@@ -99,7 +105,7 @@ public class LdapAdaptor extends AbstractAdaptor {
       String host = singleServerConfig.get("host");
       if (host == null || host.isEmpty()) {
         throw new InvalidConfigurationException("host not specified for "
-            + "ldap.servers item " + singleServerConfig.get("name"));
+            + "ldap.servers item " + singleServerConfig.get("name") + "");
       }
       int port = 389;
       Method method = Method.STANDARD;
@@ -119,9 +125,9 @@ public class LdapAdaptor extends AbstractAdaptor {
       }
       /* TODO(myk): parse authenticationType, allow Anonymous */
       String principal = singleServerConfig.get("ldapBindingDistinguishedName");
-      if (principal.isEmpty()) {
+      if (principal == null || principal.isEmpty()) {
         throw new InvalidConfigurationException("ldapBindingDistinguishedName "
-              + "not specified for host " + host);
+              + "not specified for host " + host + "");
       }
       String passwd = singleServerConfig.get("ldapBindingPassword");
       if (null != passwd) {
@@ -129,22 +135,22 @@ public class LdapAdaptor extends AbstractAdaptor {
       }
       if (passwd == null || passwd.isEmpty()) {
         throw new InvalidConfigurationException("ldapBindingPassword not "
-              + "specified for host " + host);
+              + "specified for host " + host + "");
       }
       String baseDN = singleServerConfig.get("ldapSearchBase");
       if (baseDN == null || baseDN.isEmpty()) {
         throw new InvalidConfigurationException("ldapSearchBase not specified "
-              + "for host " + host);
+              + "for host " + host + "");
       }
       String userFilter = singleServerConfig.get("userFilter");
       if (userFilter == null || userFilter.isEmpty()) {
         throw new InvalidConfigurationException("userFilter not specified for "
-              + "host " + host);
+              + "host " + host + "");
       }
       String attributes = singleServerConfig.get("attributes");
       if (attributes == null || attributes.isEmpty()) {
         throw new InvalidConfigurationException("attributes not specified for "
-              + "host " + host);
+              + "host " + host + "");
       }
       String globalNamespace = singleServerConfig.get("globalNamespace");
       if (globalNamespace == null || globalNamespace.isEmpty()) {
@@ -209,12 +215,12 @@ public class LdapAdaptor extends AbstractAdaptor {
     try {
       if (Long.parseLong(timeInSeconds) <= 0) {
         throw new InvalidConfigurationException("invalid (too small) value for "
-            + "ldap.readTimeoutSecs: " + timeInSeconds);
+            + "ldap.readTimeoutSecs: " + timeInSeconds + "");
       }
       return 1000L * Long.parseLong(timeInSeconds);
     } catch (NumberFormatException e) {
       throw new InvalidConfigurationException("invalid (non-numeric) value for "
-          + "ldap.readTimeoutSecs: " + timeInSeconds);
+          + "ldap.readTimeoutSecs: " + timeInSeconds + "");
     }
   }
 
@@ -268,22 +274,22 @@ public class LdapAdaptor extends AbstractAdaptor {
           docIds.add(makeDocId(serverNumber, person.getDn()));
         }
         log.fine("About to push " + docIds.size() + " docIds for host "
-            + server.getHostName() + ".");
+            + server.getHostName() + "");
         pusher.pushDocIds(docIds);
         log.finer("Done with push of " + docIds.size() + " docIds for host "
-            + server.getHostName() + ".");
+            + server.getHostName() + "");
       } catch (NamingException ne) {
         String host = server.getHostName();
         badHosts += "," + host;
         lastException = ne;
-        log.log(Level.WARNING, "Could not get entitites from " + host, ne);
+        log.log(Level.WARNING, "Could not get entitites from " + host + "", ne);
         continue; // just log for now; throw exception at very end.
       }
     }
     log.exiting("LdapAdaptor", "getDocIds", (lastException != null));
     if (lastException != null) {
       throw new IOException("Could not get entities from the following "
-          + "server(s): " + badHosts.substring(1), lastException);
+          + "server(s): " + badHosts.substring(1) + "", lastException);
     }
   }
 
@@ -291,33 +297,31 @@ public class LdapAdaptor extends AbstractAdaptor {
     return new DocId("server=" + serverNumber + "/" + dn);
   }
 
-  private int docIdToLdapServerNumber(DocId docId) {
-    String serverAndDn = docId.getUniqueId();
-    if (serverAndDn.startsWith("server=")) {
-      int equals = serverAndDn.indexOf("=");
-      int slash = serverAndDn.indexOf("/");
-      if (slash > 0) {
-        int serverNumber = Integer.valueOf(
-            serverAndDn.substring(equals + 1, slash));
-        if (serverNumber < servers.size() && serverNumber >= 0) {
-          return serverNumber;
-        }
-      }
+  /**
+   * The various pieces that are invidually extracted from a docId.
+   */
+  private static class ParsedDocId {
+    int serverNumber;
+    String dn;
+
+    ParsedDocId(int serverNumber, String dn) {
+      this.serverNumber = serverNumber;
+      this.dn = dn;
     }
-    throw new IllegalArgumentException("invalid DocId: " + docId);
   }
 
-  private String docIdToDn(DocId docId) {
-    String serverAndDn = docId.getUniqueId();
-    if (serverAndDn.startsWith("server=")) {
-      int equals = serverAndDn.indexOf("=");
-      int slash = serverAndDn.indexOf("/");
+  private ParsedDocId parseDocId(DocId docId) {
+    String uniqueId = docId.getUniqueId();
+    int serverNumber;
+    String dn;
+    if (uniqueId.startsWith("server=")) {
+      int equals = uniqueId.indexOf("=");
+      int slash = uniqueId.indexOf("/");
       if (slash > 0) {
-        int serverNumber = Integer.valueOf(serverAndDn.substring(equals + 1,
-            slash));
-        String dn = serverAndDn.substring(slash + 1);
+        serverNumber = Integer.valueOf(uniqueId.substring(equals + 1, slash));
         if (serverNumber < servers.size() && serverNumber >= 0) {
-          return dn;
+          dn = uniqueId.substring(slash + 1);
+          return new ParsedDocId(serverNumber, dn);
         }
       }
     }
@@ -328,11 +332,10 @@ public class LdapAdaptor extends AbstractAdaptor {
   public void getDocContent(Request req, Response resp) throws IOException {
     log.entering("LdapAdaptor", "getDocContent", new Object[] {req, resp});
     DocId id = req.getDocId();
-    int serverNumber = docIdToLdapServerNumber(id);
-    LdapServer server = servers.get(serverNumber);
-    String dn = docIdToDn(id);
+    ParsedDocId parsed = parseDocId(id);
+    LdapServer server = servers.get(parsed.serverNumber);
 
-    if (!id.equals(makeDocId(serverNumber, dn))) {
+    if (!id.equals(makeDocId(parsed.serverNumber, parsed.dn))) {
       log.warning(id + " is not a valid id generated by this adaptor.");
       resp.respondNotFound();
       return;
@@ -340,16 +343,16 @@ public class LdapAdaptor extends AbstractAdaptor {
 
     LdapPerson fetched;
     try {
-      fetched = server.fetchOne(dn);
+      fetched = server.fetchOne(parsed.dn);
       if (null == fetched) {
-        log.finer("No results found for DN " + dn);
+        log.finer("No results found for DN " + parsed.dn + "");
         resp.respondNotFound();
         log.exiting("LdapAdaptor", "getDocContent", 0);
         return;
       }
       InputStream input = new ByteArrayInputStream(fetched.asDoc(
           server.getDisplayTemplate()).getBytes(CHARSET));
-      resp.setContentType("text/html; charset=" + CHARSET.name());
+      resp.setContentType("text/html; charset=" + CHARSET.name() + "");
       IOHelper.copyStream(input, resp.getOutputStream());
       log.exiting("LdapAdaptor", "getDocContent", 1);
     } catch (InterruptedNamingException e) {
@@ -358,7 +361,8 @@ public class LdapAdaptor extends AbstractAdaptor {
     }
   }
 
-  private static class AttributeValidationStatusSource implements StatusSource {
+  @VisibleForTesting
+  static class AttributeValidationStatusSource implements StatusSource {
 
     private final Config config;
     private final Locale locale = Locale.getDefault();
@@ -496,7 +500,10 @@ public class LdapAdaptor extends AbstractAdaptor {
       if (null != messageAsString) {
         return messageAsString;
       }
-      return message == null ? null : message.toString(locale, params);
+      if (message != null) {
+        messageAsString = message.toString(locale, params);
+      }
+      return messageAsString;
     }
 
     @Override

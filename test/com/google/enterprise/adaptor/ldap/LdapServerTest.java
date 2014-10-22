@@ -561,11 +561,11 @@ public class LdapServerTest {
     LdapPerson fetched = ldapServer.fetchOne("ou=basedn");
   }
 
-  public LdapServer makeMockLdapServer(LdapContext ldapContext) {
+  public static LdapServer makeMockLdapServer(LdapContext ldapContext) {
     return makeMockLdapServer(ldapContext, "dn={dn}, cn={cn}");
   }
 
-  public LdapServer makeMockLdapServer(LdapContext ldapContext,
+  public static LdapServer makeMockLdapServer(LdapContext ldapContext,
       String displayTemplate) {
     return new LdapServer("localhost", "nickname", "ou=basedn", "userFilter",
         "attr1,cn,dn" /* attributes */, "globalNamespace", "localNamespace",
