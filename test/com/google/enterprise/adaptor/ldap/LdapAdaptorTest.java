@@ -422,9 +422,8 @@ public class LdapAdaptorTest {
     AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     try {
-      // ldapAdaptor.getDocIds(pusher);
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
-        /*init=*/ true);
+      pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
+          /*fullPush=*/ true, /*init=*/ true);
     } catch (IOException ioe) {
       assertEquals("Could not get entities from the following server(s): "
           + "localhost", ioe.getMessage());
