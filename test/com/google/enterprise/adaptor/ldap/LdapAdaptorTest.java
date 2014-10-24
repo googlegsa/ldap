@@ -818,7 +818,7 @@ public class LdapAdaptorTest {
   }
 
   /** A version of LdapAdaptor that uses only mock LdapServers */
-  private class FakeAdaptor extends LdapAdaptor {
+  private static class FakeAdaptor extends LdapAdaptor {
     @Override
     LdapServer newLdapServer(String host, String nick, Method method, int port,
         String principal, String passwd, String baseDN, String userFilter,
@@ -844,7 +844,7 @@ public class LdapAdaptorTest {
   };
 
   /** A trivial implemenation of {@link Request} */
-  private class MockRequest implements Request {
+  private static class MockRequest implements Request {
     private final DocId docid;
     private final Date lastAccess;
 
@@ -877,7 +877,7 @@ public class LdapAdaptorTest {
    * An implementation of {@link Response} that implements only those items that
    * the adaptor uses.
    */
-  private class MockResponse implements Response {
+  private static class MockResponse implements Response {
 
     boolean notModified = false;
     boolean notFound = false;
