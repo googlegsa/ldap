@@ -20,16 +20,12 @@ import com.google.enterprise.adaptor.AdaptorContext;
 import com.google.enterprise.adaptor.Config;
 import com.google.enterprise.adaptor.DocId;
 import com.google.enterprise.adaptor.DocIdPusher;
-import com.google.enterprise.adaptor.GroupPrincipal;
-import com.google.enterprise.adaptor.InvalidConfigurationException;
 import com.google.enterprise.adaptor.IOHelper;
-import com.google.enterprise.adaptor.Principal;
+import com.google.enterprise.adaptor.InvalidConfigurationException;
 import com.google.enterprise.adaptor.Request;
 import com.google.enterprise.adaptor.Response;
-import com.google.enterprise.adaptor.StartupException;
 import com.google.enterprise.adaptor.Status;
 import com.google.enterprise.adaptor.StatusSource;
-import com.google.enterprise.adaptor.UserPrincipal;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,17 +34,12 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +59,6 @@ public class LdapAdaptor extends AbstractAdaptor {
     AbstractAdaptor.main(new LdapAdaptor(), args);
   }
 
-  private String defaultNamespace;
   private List<LdapServer> servers = new ArrayList<LdapServer>();
   private long ldapTimeoutInMillis;
 
@@ -82,14 +72,12 @@ public class LdapAdaptor extends AbstractAdaptor {
   @Override
   public void init(AdaptorContext context) throws Exception {
     Config config = context.getConfig();
-    defaultNamespace = config.getValue("adaptor.namespace");
     /*
      * The trailing <code>+ ""</code> (which really does nothing at runtime)
      * is a workaround to a Cobertura bug that would otherwise mark the line of
      * code as only being 50% tested.  This occurs in approximately one dozen
      * places throughout this file.
      */
-    log.config("default namespace: " + defaultNamespace + "");
     ldapTimeoutInMillis = parseReadTimeoutInMillis(
         config.getValue("ldap.readTimeoutSecs"));
 
@@ -152,21 +140,11 @@ public class LdapAdaptor extends AbstractAdaptor {
         throw new InvalidConfigurationException("attributes not specified for "
               + "host " + host + "");
       }
-      String globalNamespace = singleServerConfig.get("globalNamespace");
-      if (globalNamespace == null || globalNamespace.isEmpty()) {
-        globalNamespace = defaultNamespace;
-      }
-      String localNamespace = singleServerConfig.get("localNamespace");
-      if (localNamespace == null || localNamespace.isEmpty()) {
-        localNamespace = defaultNamespace;
-      }
       int docsPerMinute = 1000; // "documents" (people) read in per minute
       if (singleServerConfig.containsKey("docsPerMinute")) {
         docsPerMinute = Integer.parseInt(
             singleServerConfig.get("docsPerMinute"));
       }
-      boolean disableTraversal = Boolean.parseBoolean(
-          singleServerConfig.get("disableTraversal"));
       // TODO(myk): allow Widget View, Detailed View, Detailed View with
       // Dynamic Navigation -- most likely just using three config variables.
       String displayTemplate = singleServerConfig.get("displayTemplate");
@@ -177,8 +155,7 @@ public class LdapAdaptor extends AbstractAdaptor {
 
       LdapServer ldapServer = newLdapServer(host,
           singleServerConfig.get("name"), method, port, principal, passwd,
-          baseDN, userFilter, attributes, globalNamespace, localNamespace,
-          docsPerMinute, disableTraversal, ldapTimeoutInMillis,
+          baseDN, userFilter, attributes, docsPerMinute, ldapTimeoutInMillis,
           displayTemplate);
       ldapServer.initialize();
       servers.add(ldapServer);
@@ -198,12 +175,11 @@ public class LdapAdaptor extends AbstractAdaptor {
   @VisibleForTesting
   LdapServer newLdapServer(String host, String nick, Method method, int port,
       String principal, String passwd, String baseDN, String userFilter,
-      String attributes, String globalNamespace, String localNamespace,
-      int docsPerMinute, boolean disableTraversal, long ldapTimeoutInMillis,
+      String attributes, int docsPerMinute, long ldapTimeoutInMillis,
       String displayTemplate) {
     return new LdapServer(host, nick, method, port, principal, passwd, baseDN,
-        userFilter, attributes, globalNamespace, localNamespace, docsPerMinute,
-        disableTraversal, ldapTimeoutInMillis, displayTemplate);
+        userFilter, attributes, docsPerMinute, ldapTimeoutInMillis,
+        displayTemplate);
   }
 
   private static long parseReadTimeoutInMillis(String timeInSeconds)

@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
 
 import com.google.common.collect.Sets;
 
-import com.google.enterprise.adaptor.InvalidConfigurationException;
 import com.google.enterprise.adaptor.StartupException;
 import com.google.enterprise.adaptor.Status;
 import com.google.enterprise.adaptor.ldap.LdapAdaptor.TranslationStatus;
@@ -58,10 +57,8 @@ public class LdapServerTest {
     thrown.expect(NullPointerException.class);
     LdapServer ldapServer = new LdapServer("localhost", "nickname",
         null /* connectMethod */, 389, "principal", "password", "ou=basedn",
-        "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
-        "dn={dn}, cn={cn}");
+        "userFilter", "cn,dn" /* attributes */, 1000 /* traversalRate */,
+        9000 /*ldapTimeoutInMillis */, "dn={dn}, cn={cn}");
   }
 
   @Test
@@ -69,9 +66,8 @@ public class LdapServerTest {
     thrown.expect(NullPointerException.class);
     LdapServer ldapServer = new LdapServer(null, "nickname",
         Method.STANDARD /* connectMethod */, 389, "principal", "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -80,9 +76,8 @@ public class LdapServerTest {
     thrown.expect(IllegalArgumentException.class);
     LdapServer ldapServer = new LdapServer("", "nickname",
         Method.STANDARD /* connectMethod */, 389, "principal", "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -91,9 +86,8 @@ public class LdapServerTest {
     thrown.expect(NullPointerException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.STANDARD /* connectMethod */, 389, null, "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -102,9 +96,8 @@ public class LdapServerTest {
     thrown.expect(IllegalArgumentException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.STANDARD /* connectMethod */, 389, "", "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -113,9 +106,8 @@ public class LdapServerTest {
     thrown.expect(NullPointerException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.STANDARD /* connectMethod */, 389, "principal", null,
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -124,9 +116,8 @@ public class LdapServerTest {
     thrown.expect(IllegalArgumentException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.STANDARD /* connectMethod */, 389, "principal", "",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -135,9 +126,8 @@ public class LdapServerTest {
     thrown.expect(RuntimeException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.STANDARD /* connectMethod */, 389, "principal", "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -146,9 +136,8 @@ public class LdapServerTest {
     thrown.expect(RuntimeException.class);
     LdapServer ldapServer = new LdapServer("hostname", "nickname",
         Method.SSL /* connectMethod */, 636, "principal", "password",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, 9000 /*ldapTimeoutInMillis */,
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, 9000 /*ldapTimeoutInMillis */,
         "dn={dn}, cn={cn}");
   }
 
@@ -290,9 +279,8 @@ public class LdapServerTest {
       }
     };
     LdapServer ldapServer = new LdapServer("localhost", "nickname",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "dn={dn}, cn={cn}", ldapContext) {
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, "dn={dn}, cn={cn}", ldapContext) {
       @Override
       void recreateLdapContext() {
         // do nothing
@@ -355,9 +343,8 @@ public class LdapServerTest {
       }
     };
     LdapServer ldapServer = new LdapServer("localhost", "nickname",
-        "ou=basedn", "userFilter", "cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "dn={dn}, cn={cn}", ldapContext) {
+        "ou=basedn", "userFilter", "cn,dn" /* attributes */,
+        1000 /* traversalRate */, "dn={dn}, cn={cn}", ldapContext) {
       @Override
       void recreateLdapContext() {
         throw new StartupException("persistent problem");
@@ -439,9 +426,8 @@ public class LdapServerTest {
     MockLdapContext ldapContext = new MockLdapContext();
     ldapContext.addSearchResult("ou=basedn", "userFilter", "cn", "user1");
     LdapServer ldapServer = new LdapServer("localhost", "nickname", "ou=basedn",
-        "userFilter", "attr1,attr2,cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "displayTemplateNotUsingAnyVariables",
+        "userFilter", "attr1,attr2,cn,dn" /* attributes */,
+        1000 /* traversalRate */, "displayTemplateNotUsingAnyVariables",
         ldapContext);
 
     Set<LdapPerson> resultSet = ldapServer.scanAll();
@@ -513,9 +499,8 @@ public class LdapServerTest {
   public void testFetchOneMoreThanOneResult() throws Exception {
     MockLdapContext ldapContext = new MockLdapContext();
     LdapServer ldapServer = new LdapServer("localhost", "nickname", "ou=basedn",
-        "userFilter", "attr1,cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "dn={dn}, cn={cn}", ldapContext) {
+        "userFilter", "attr1,cn,dn" /* attributes */,
+        1000 /* traversalRate */, "dn={dn}, cn={cn}", ldapContext) {
       @Override
       protected Set<LdapPerson> search(String baseDN, String filter,
           String[] attributes, boolean validateAttributes)
@@ -547,9 +532,8 @@ public class LdapServerTest {
     thrown.expect(NullPointerException.class);
     MockLdapContext ldapContext = new MockLdapContext();
     LdapServer ldapServer = new LdapServer("localhost", "nickname", "ou=basedn",
-        "userFilter", "attr1,cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "dn={dn}, cn={cn}", ldapContext) {
+        "userFilter", "attr1,cn,dn" /* attributes */,
+        1000 /* traversalRate */, "dn={dn}, cn={cn}", ldapContext) {
       @Override
       protected Set<LdapPerson> search(String baseDN, String filter,
           String[] attributes, boolean validateAttributes)
@@ -568,8 +552,7 @@ public class LdapServerTest {
   public static LdapServer makeMockLdapServer(LdapContext ldapContext,
       String displayTemplate) {
     return new LdapServer("localhost", "nickname", "ou=basedn", "userFilter",
-        "attr1,cn,dn" /* attributes */, "globalNamespace", "localNamespace",
-        1000 /* traversalRate */, false /* disableTraversal */,
+        "attr1,cn,dn" /* attributes */, 1000 /* traversalRate */,
         displayTemplate, ldapContext);
   }
 }

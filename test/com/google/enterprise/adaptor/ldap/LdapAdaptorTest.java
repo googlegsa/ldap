@@ -21,10 +21,7 @@ import com.google.enterprise.adaptor.Adaptor;
 import com.google.enterprise.adaptor.Config;
 import com.google.enterprise.adaptor.DocId;
 import com.google.enterprise.adaptor.DocIdPusher;
-import com.google.enterprise.adaptor.GroupPrincipal;
-import com.google.enterprise.adaptor.IOHelper;
 import com.google.enterprise.adaptor.InvalidConfigurationException;
-import com.google.enterprise.adaptor.Principal;
 import com.google.enterprise.adaptor.Request;
 import com.google.enterprise.adaptor.Response;
 import com.google.enterprise.adaptor.Status;
@@ -33,13 +30,11 @@ import com.google.enterprise.adaptor.TestHelper;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,10 +44,7 @@ import java.util.Set;
 
 import javax.naming.CommunicationException;
 import javax.naming.InterruptedNamingException;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
 
 /**
   * Unit tests for methods in LdapAdaptor and all its non-private subclasses.
@@ -248,34 +240,6 @@ public class LdapAdaptorTest {
   }
 
   @Test
-  public void testFakeAdaptorInitOKWhenGlobalNamespaceDefaultValue()
-      throws Exception {
-    final FakeAdaptor ldapAdaptor = new FakeAdaptor();
-    AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
-    Map<String, String> configEntries = defaultConfigEntries();
-    configEntries.remove("ldap.servers.server1.globalNamespace");
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
-        /*fullPush=*/ true, /*init=*/ true);
-    configEntries.put("ldap.servers.server1.globalNamespace", "");
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
-        /*fullPush=*/ true, /*init=*/ true);
-  }
-
-  @Test
-  public void testFakeAdaptorInitOKWhenLocalNamespaceDefaultValue()
-      throws Exception {
-    final FakeAdaptor ldapAdaptor = new FakeAdaptor();
-    AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
-    Map<String, String> configEntries = defaultConfigEntries();
-    configEntries.remove("ldap.servers.server1.localNamespace");
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
-        /*fullPush=*/ true, /*init=*/ true);
-    configEntries.put("ldap.servers.server1.localNamespace", "");
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
-        /*fullPush=*/ true, /*init=*/ true);
-  }
-
-  @Test
   public void testFakeAdaptorInitOKWhenDocsPerMinuteDefaultValue()
       throws Exception {
     final FakeAdaptor ldapAdaptor = new FakeAdaptor();
@@ -396,13 +360,10 @@ public class LdapAdaptorTest {
       @Override
       LdapServer newLdapServer(String host, String nick, Method method,
           int port, String principal, String passwd, String baseDN,
-          String userFilter, String attributes, String globalNamespace,
-          String localNamespace, int docsPerMinute, boolean disableTraversal,
+          String userFilter, String attributes, int docsPerMinute,
           long ldapTimeoutInMillis, String displayTemplate) {
-
         return new LdapServer(host, nick, baseDN, userFilter, attributes,
-            globalNamespace, localNamespace, docsPerMinute, disableTraversal,
-            displayTemplate, ldapContext) {
+            docsPerMinute, displayTemplate, ldapContext) {
           @Override
           void recreateLdapContext() {
             // leave ldapContext unchanged
@@ -534,13 +495,10 @@ public class LdapAdaptorTest {
       @Override
       LdapServer newLdapServer(String host, String nick, Method method,
           int port, String principal, String passwd, String baseDN,
-          String userFilter, String attributes, String globalNamespace,
-          String localNamespace, int docsPerMinute, boolean disableTraversal,
+          String userFilter, String attributes, int docsPerMinute,
           long ldapTimeoutInMillis, String displayTemplate) {
-
         return new LdapServer(host, nick, baseDN, userFilter, attributes,
-            globalNamespace, localNamespace, docsPerMinute, disableTraversal,
-            displayTemplate, ldapContext) {
+            docsPerMinute, displayTemplate, ldapContext) {
           @Override
           void recreateLdapContext() {
             // leave ldapContext unchanged
@@ -607,9 +565,8 @@ public class LdapAdaptorTest {
       throws Exception {
     final MockLdapContext ldapContext = new MockLdapContext();
     final LdapServer first = new LdapServer("localhost", "first", "ou=basedn",
-        "userFilter", "attr1,cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "" /* displayTemplate */, ldapContext) {
+        "userFilter", "attr1,cn,dn" /* attributes */, 1000 /* traversalRate */,
+        "" /* displayTemplate */, ldapContext) {
       @Override
       public LdapAdaptor.TranslationStatus getStatus() {
         return new LdapAdaptor.TranslationStatus(Status.Code.WARNING,
@@ -618,9 +575,8 @@ public class LdapAdaptorTest {
       }
     };
     final LdapServer second = new LdapServer("localhost", "second", "ou=basedn",
-        "userFilter", "attr1,cn,dn" /* attributes */, "globalNamespace",
-        "localNamespace", 1000 /* traversalRate */,
-        false /* disableTraversal */, "" /* displayTemplate */, ldapContext) {
+        "userFilter", "attr1,cn,dn" /* attributes */, 1000 /* traversalRate */,
+        "" /* displayTemplate */, ldapContext) {
       @Override
       public LdapAdaptor.TranslationStatus getStatus() {
         return new LdapAdaptor.TranslationStatus(Status.Code.ERROR,
@@ -716,7 +672,7 @@ public class LdapAdaptorTest {
 
   // helper methods and classes below this line - no more test cases
 
-  private MockLdapContext defaultMockLdapContext() throws Exception {
+  private static MockLdapContext defaultMockLdapContext() throws Exception {
     MockLdapContext ldapContext = new MockLdapContext();
     ldapContext.addSearchResult("cn=name\\ under,basedn", "userFilter", "attr1",
         "val1");
@@ -741,8 +697,6 @@ public class LdapAdaptorTest {
     configEntries.put("ldap.servers.server1.ldapSearchBase", "TBD");
     configEntries.put("ldap.servers.server1.userFilter", "TBD");
     configEntries.put("ldap.servers.server1.attributes", "dn,cn,attr1");
-    configEntries.put("ldap.servers.server1.globalNamespace", "TBD");
-    configEntries.put("ldap.servers.server1.localNamespace", "TBD");
     configEntries.put("ldap.servers.server1.docsPerMinute", "1000");
     configEntries.put("ldap.servers.server1.displayTemplate", "cn: {cn}");
     configEntries.put("ldap.servers.server2.host", "localhost");
@@ -755,8 +709,6 @@ public class LdapAdaptorTest {
     configEntries.put("ldap.servers.server2.ldapSearchBase", "TBD");
     configEntries.put("ldap.servers.server2.userFilter", "TBD");
     configEntries.put("ldap.servers.server2.attributes", "dn,cn,attr1");
-    configEntries.put("ldap.servers.server2.globalNamespace", "TBD");
-    configEntries.put("ldap.servers.server2.localNamespace", "TBD");
     configEntries.put("ldap.readTimeoutSecs", "");
     configEntries.put("server.port", "5680");
     configEntries.put("server.dashboardPort", "5681");
@@ -778,8 +730,6 @@ public class LdapAdaptorTest {
         "cn=name\\ under,basedn");
     configEntries.put("ldap.servers.server0.userFilter", "userFilter");
     configEntries.put("ldap.servers.server0.attributes", "dn,cn,attr1");
-    configEntries.put("ldap.servers.server0.globalNamespace", "TBD");
-    configEntries.put("ldap.servers.server0.localNamespace", "TBD");
     configEntries.put("ldap.servers.server0.docsPerMinute", "1000");
     configEntries.put("ldap.servers.server0.displayTemplate", "cn: {cn}");
     configEntries.put("ldap.readTimeoutSecs", "");
@@ -822,10 +772,8 @@ public class LdapAdaptorTest {
     @Override
     LdapServer newLdapServer(String host, String nick, Method method, int port,
         String principal, String passwd, String baseDN, String userFilter,
-        String attributes, String globalNamespace, String localNamespace,
-        int docsPerMinute, boolean disableTraversal, long ldapTimeoutInMillis,
+        String attributes, int docsPerMinute, long ldapTimeoutInMillis,
         String displayTemplate) {
-
       MockLdapContext ldapContext = null;
       try {
         ldapContext = defaultMockLdapContext();
@@ -833,8 +781,7 @@ public class LdapAdaptorTest {
         fail("Could not create LdapContext:" + e);
       }
       return new LdapServer(host, nick, baseDN, userFilter, attributes,
-          globalNamespace, localNamespace, docsPerMinute, disableTraversal,
-          displayTemplate, ldapContext) {
+          docsPerMinute, displayTemplate, ldapContext) {
         @Override
         void recreateLdapContext() {
           // leave ldapContext unchanged

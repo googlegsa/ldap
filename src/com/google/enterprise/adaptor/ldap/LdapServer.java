@@ -15,7 +15,6 @@
 package com.google.enterprise.adaptor.ldap;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import com.google.enterprise.adaptor.InvalidConfigurationException;
 import com.google.enterprise.adaptor.StartupException;
 import com.google.enterprise.adaptor.Status;
@@ -35,7 +34,6 @@ import javax.naming.Context;
 import javax.naming.InterruptedNamingException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -64,24 +62,19 @@ class LdapServer {
   private String principal;
   private final String attributes;
   private final String baseDN;
-  private final boolean disableTraversal;
   private final String displayTemplate;
-  private final String globalNamespace;
   private final String hostName;
-  private final String localNamespace;
   private final String nickName;
-  private final int traversalRate;
+  private final int docsPerMinute; //TODO(myk): implement this functionality
   private final String userFilter;
 
   public LdapServer(String hostName, String nickName, Method connectMethod,
       int port, String principal, String password, String baseDN,
-      String userFilter, String attributes, String globalNamespace,
-      String localNamespace, int traversalRate, boolean disableTraversal,
+      String userFilter, String attributes, int docsPerMinute,
       long ldapTimeoutInMillis, String displayTemplate) {
-    this(hostName, nickName, baseDN, userFilter, attributes, globalNamespace,
-        localNamespace, traversalRate, disableTraversal, displayTemplate,
-        createLdapContext(hostName, connectMethod, port, principal, password,
-            ldapTimeoutInMillis));
+    this(hostName, nickName, baseDN, userFilter, attributes, docsPerMinute,
+        displayTemplate, createLdapContext(hostName, connectMethod, port,
+            principal, password, ldapTimeoutInMillis));
     this.connectMethod = connectMethod;
     this.port = port;
     this.principal = principal;
@@ -91,18 +84,14 @@ class LdapServer {
 
   @VisibleForTesting
   LdapServer(String hostName, String nickName, String baseDN, String userFilter,
-      String attributes, String globalNamespace, String localNamespace,
-      int traversalRate, boolean disableTraversal, String displayTemplate,
+      String attributes, int docsPerMinute, String displayTemplate,
       LdapContext ldapContext) {
     this.hostName = hostName;
     this.nickName = nickName;
     this.baseDN = baseDN;
     this.userFilter = userFilter;
     this.attributes = attributes;
-    this.globalNamespace = globalNamespace;
-    this.localNamespace = localNamespace;
-    this.traversalRate = traversalRate;
-    this.disableTraversal = disableTraversal;
+    this.docsPerMinute = docsPerMinute;
     this.displayTemplate = displayTemplate;
     this.ldapContext = ldapContext;
     searchCtls = new SearchControls();
@@ -290,7 +279,7 @@ class LdapServer {
             if (validateAttributes && !attributesNotYetSeen.isEmpty()) {
               Attributes allAttrs = sr.getAttributes();
               NamingEnumeration<String> idEnumeration = allAttrs.getIDs();
-              while(idEnumeration.hasMore()) {
+              while (idEnumeration.hasMore()) {
                 String id = idEnumeration.next().toLowerCase();
                 attributesNotYetSeen.remove(id);
               }
@@ -310,8 +299,8 @@ class LdapServer {
         cookie = null;
         Control[] resultResponseControls = ldapContext.getResponseControls();
         for (int i = 0; i < resultResponseControls.length; ++i) {
-          if (resultResponseControls[i] instanceof
-              PagedResultsResponseControl) {
+          if (resultResponseControls[i]
+              instanceof PagedResultsResponseControl) {
             cookie = ((PagedResultsResponseControl) resultResponseControls[i])
                 .getCookie();
             ldapContext.setRequestControls(new Control[] {

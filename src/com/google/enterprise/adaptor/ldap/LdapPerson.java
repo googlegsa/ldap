@@ -14,18 +14,7 @@
 
 package com.google.enterprise.adaptor.ldap;
 
-import com.google.enterprise.adaptor.AbstractAdaptor;
-import com.google.enterprise.adaptor.AdaptorContext;
-import com.google.enterprise.adaptor.Config;
-import com.google.enterprise.adaptor.DocId;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -98,7 +87,7 @@ class LdapPerson {
     Attributes allAttrs = searchResult.getAttributes();
     NamingEnumeration<String> idEnumeration = allAttrs.getIDs();
     try {
-      while(idEnumeration.hasMore()) {
+      while (idEnumeration.hasMore()) {
         String id = idEnumeration.next();
         result.append(id, "" + getAttribute(allAttrs, id));
       }
