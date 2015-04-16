@@ -17,6 +17,9 @@ package com.google.enterprise.adaptor.ldap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.enterprise.adaptor.AbstractAdaptor;
 import com.google.enterprise.adaptor.AdaptorContext;
+import com.google.enterprise.adaptor.AuthnIdentity;
+import com.google.enterprise.adaptor.AuthzAuthority;
+import com.google.enterprise.adaptor.AuthzStatus;
 import com.google.enterprise.adaptor.Config;
 import com.google.enterprise.adaptor.DocId;
 import com.google.enterprise.adaptor.DocIdPusher;
@@ -34,6 +37,9 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -163,6 +169,8 @@ public class LdapAdaptor extends AbstractAdaptor {
       dup.put("ldapBindingPassword", "XXXXXX");  // hide password
       log.config("LDAP server spec: " + dup);
     }
+    // Mark all Documents as public, so the URLs can be visited by anyone.
+    context.setAuthzAuthority(new AllPublic());
     // add a new StatusSource to the Dashboard
     context.addStatusSource(new AttributeValidationStatusSource(config,
         servers));
@@ -271,6 +279,22 @@ public class LdapAdaptor extends AbstractAdaptor {
 
   private DocId makeDocId(int serverNumber, String dn) {
     return new DocId("server=" + serverNumber + "/" + dn);
+  }
+
+  /**
+   * Use this AuthzAuthority to make all getDocContent requests available
+   * to all (aka public).
+   */
+  private static class AllPublic implements AuthzAuthority {
+    public Map<DocId, AuthzStatus> isUserAuthorized(AuthnIdentity userIdentity,
+        Collection<DocId> ids) throws IOException {
+      Map<DocId, AuthzStatus> result =
+          new HashMap<DocId, AuthzStatus>(ids.size() * 2);
+      for (DocId docId : ids) {
+        result.put(docId, AuthzStatus.PERMIT);
+      }
+      return Collections.unmodifiableMap(result);
+    }
   }
 
   /**
