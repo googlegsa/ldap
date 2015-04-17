@@ -815,6 +815,11 @@ public class LdapAdaptorTest {
     }
 
     @Override
+    public boolean canRespondWithNoContent(Date lastModified) {
+      return false;
+    }
+
+    @Override
     public Date getLastAccessTime() {
       return lastAccess;
     }
@@ -846,6 +851,11 @@ public class LdapAdaptorTest {
     @Override
     public void respondNotFound() throws IOException {
       notFound = true;
+    }
+
+    @Override
+    public void respondNoContent() throws IOException {
+      throw new UnsupportedOperationException();
     }
 
     @Override
