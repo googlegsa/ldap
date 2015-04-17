@@ -14,7 +14,11 @@
 
 package com.google.enterprise.adaptor.ldap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.enterprise.adaptor.Acl;
 import com.google.enterprise.adaptor.Adaptor;
@@ -27,7 +31,8 @@ import com.google.enterprise.adaptor.Response;
 import com.google.enterprise.adaptor.Status;
 import com.google.enterprise.adaptor.TestHelper;
 
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayOutputStream;
@@ -62,7 +67,7 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntries();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // pushGroupDefinitions calls AdAdaptor.init() with the specified config.
+    // pushGroupDefinitions calls LdapAdaptor.init() with the specified config.
   }
 
   @Test
@@ -334,11 +339,11 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config as well as
+    // the above calls LdapAdaptor.init() with the specified config as well as
     // calling getDocIds.
     assertEquals(1, pusher.getRecords().size());
-    String expectedDocId="server=0/cn=name\\ under,cn=name\\ under,basedn";
-    String expectedRecord="Record(docid=" + expectedDocId + ",delete=false,"
+    String expectedDocId = "server=0/cn=name\\ under,cn=name\\ under,basedn";
+    String expectedRecord = "Record(docid=" + expectedDocId + ",delete=false,"
         + "lastModified=null,resultLink=null,crawlImmediately=false,crawlOnce="
         + "false,lock=false)";
     assertEquals(expectedRecord, pusher.getRecords().get(0).toString());
@@ -402,7 +407,7 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config.
+    // the above calls LdapAdaptor.init() with the specified config.
     assertEquals(1, pusher.getRecords().size());
     MockResponse response = new MockResponse();
     String[] docIdsToTest = new String[] {
@@ -431,7 +436,7 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config.
+    // the above calls LdapAdaptor.init() with the specified config.
     assertEquals(1, pusher.getRecords().size());
     MockResponse response = new MockResponse();
     ldapAdaptor.getDocContent(new MockRequest(
@@ -447,10 +452,10 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config.
+    // the above calls LdapAdaptor.init() with the specified config.
     assertEquals(1, pusher.getRecords().size());
-    String expectedDocId="server=0/cn=name\\ under,basedn";
-    String expectedRecord="Record(docid=server=0/cn=name\\ under,cn=name\\ "
+    String expectedDocId = "server=0/cn=name\\ under,basedn";
+    String expectedRecord = "Record(docid=server=0/cn=name\\ under,cn=name\\ "
         + "under,basedn,delete=false,lastModified=null,resultLink=null,"
         + "crawlImmediately=false,crawlOnce=false,lock=false)";
     assertEquals(expectedRecord, pusher.getRecords().get(0).toString());
@@ -473,10 +478,10 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config.
+    // the above calls LdapAdaptor.init() with the specified config.
     assertEquals(1, pusher.getRecords().size());
-    String expectedDocId="server=0/cn=name\\ under,basedn";
-    String expectedRecord="Record(docid=server=0/cn=name\\ under,cn=name\\ "
+    String expectedDocId = "server=0/cn=name\\ under,basedn";
+    String expectedRecord = "Record(docid=server=0/cn=name\\ under,cn=name\\ "
         + "under,basedn,delete=false,lastModified=null,resultLink=null,"
         + "crawlImmediately=false,crawlOnce=false,lock=false)";
     assertEquals(expectedRecord, pusher.getRecords().get(0).toString());
@@ -515,9 +520,9 @@ public class LdapAdaptorTest {
     Map<String, String> configEntries = defaultConfigEntriesForOneServer();
     pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
         /*init=*/ true);
-    // the above calls AdAdaptor.init() with the specified config.
+    // the above calls LdapAdaptor.init() with the specified config.
     assertEquals(0, pusher.getRecords().size());
-    String expectedDocId="server=0/cn=name\\ under,basedn";
+    String expectedDocId = "server=0/cn=name\\ under,basedn";
     MockResponse response = new MockResponse();
     ldapAdaptor.getDocContent(new MockRequest(new DocId(expectedDocId)),
         response);
