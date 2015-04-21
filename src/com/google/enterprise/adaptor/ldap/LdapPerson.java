@@ -14,6 +14,9 @@
 
 package com.google.enterprise.adaptor.ldap;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.naming.NamingEnumeration;
@@ -96,6 +99,38 @@ class LdapPerson {
       result.append("NamingException", ne.toString());
     }
     return result.toString();
+  }
+
+  /**
+   * @return all metadata for the current object.
+   */
+  public Map<String, String> asMetadata() {
+    HashMap<String, String> result = new HashMap<String, String>();
+    Attributes allAttrs = searchResult.getAttributes();
+    NamingEnumeration<String> idEnumeration = allAttrs.getIDs();
+    while (true) {
+      try {
+        if (!idEnumeration.hasMore()) {
+          idEnumeration.close();
+          return result;
+        }
+      } catch (NamingException ne) {
+        // if calling hasMore() throws this exception, don't bother calling
+        // .close() on idEnumeration.
+        log.log(Level.WARNING, "Unexpected NamingException while processing "
+            + "metadata from " + dn, ne);
+        return result;
+      }
+      // reaching here implies idEnumeration.hasMore() returned true, without
+      // catching an exception.
+      try {
+        String id = idEnumeration.next();
+        result.put(id, "" + getAttribute(allAttrs, id));
+      } catch (NamingException ne) {
+        log.log(Level.WARNING, "Unexpected NamingException while retrieving "
+            + "metadata from " + dn, ne);
+      }
+    }
   }
 
   public String asDoc(String displayTemplate) {

@@ -14,14 +14,20 @@
 
 package com.google.enterprise.adaptor.ldap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashMap;
 
 import javax.naming.NamingException;
-import javax.naming.directory.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.SearchResult;
 
 /** Test cases for {@link LdapPerson}. */
 public class LdapPersonTest {
@@ -104,6 +110,28 @@ public class LdapPersonTest {
   }
 
   @Test
+  public void testAsMetadata() throws Exception {
+    Attributes attrs = new BasicAttributes();
+    attrs.put("cn", "user");
+    attrs.put("givenName", "Test");
+    attrs.put("sn", "User");
+    attrs.put("name", null);
+    attrs.put("numeric", 42);
+
+    SearchResult sr = new SearchResult("SR name", attrs, attrs);
+    sr.setNameInNamespace("cn=user,ou=Users,dc=example,dc=com");
+    LdapPerson ldapPerson = new LdapPerson(sr);
+    HashMap<String, String> golden = new HashMap<String, String>();
+    golden.put("cn", "user");
+    golden.put("givenName", "Test");
+    golden.put("sn", "User");
+    golden.put("name", "null");  // we return the string "null", not null itself
+    golden.put("numeric", "42");  // also convert 42 to a String
+
+    assertEquals(golden, ldapPerson.asMetadata());
+  }
+
+  @Test
   public void testAsDoc() throws Exception {
     Attributes attrs = new BasicAttributes();
     attrs.put("cn", "user");
@@ -169,6 +197,11 @@ public class LdapPersonTest {
         + "NamingException = javax.naming.NamingException: expectedException",
         ldapPerson.toString());
     assertEquals("Name: ", ldapPerson.asDoc("Name: {exception}"));
+    HashMap<String, String> expected = new HashMap<String, String>();
+    expected.put("cn", "user");
+    expected.put("givenName", "Test");
+    expected.put("sn", "User");
+    assertEquals(expected, ldapPerson.asMetadata());
   }
 
 }

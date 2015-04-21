@@ -469,6 +469,12 @@ public class LdapAdaptorTest {
     String goldenContent = "cn: name\\ under";
     String responseAsString = new String(response.content.toByteArray());
     assertEquals(goldenContent, responseAsString);
+    HashMap<String, String> goldenMetadata = new HashMap<String, String>();
+    // these 3 attributes are defined in defaultMockLdapContext()
+    goldenMetadata.put("attr1", "val1");
+    goldenMetadata.put("cn", "name\\ under");
+    goldenMetadata.put("dn", "cn=name\\ under,basedn");
+    assertEquals(goldenMetadata, response.metadata);
   }
 
   @Test

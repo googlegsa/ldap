@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
@@ -349,6 +350,9 @@ public class LdapAdaptor extends AbstractAdaptor {
         resp.respondNotFound();
         log.exiting("LdapAdaptor", "getDocContent", 0);
         return;
+      }
+      for (Entry<String, String> metadatum : fetched.asMetadata().entrySet()) {
+        resp.addMetadata(metadatum.getKey(), metadatum.getValue());
       }
       InputStream input = new ByteArrayInputStream(fetched.asDoc(
           server.getDisplayTemplate()).getBytes(CHARSET));
