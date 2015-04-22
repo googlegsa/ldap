@@ -89,16 +89,27 @@ class LdapPerson {
     result.append("dn", dn);
     Attributes allAttrs = searchResult.getAttributes();
     NamingEnumeration<String> idEnumeration = allAttrs.getIDs();
-    try {
-      while (idEnumeration.hasMore()) {
+    while (true) {
+      try {
+        if (!idEnumeration.hasMore()) {
+          idEnumeration.close();
+          return result.toString();
+        }
+      } catch (NamingException ne) {
+        log.log(Level.WARNING, "Unexpected NamingException while processing "
+            + "attributes from " + dn, ne);
+        return result.toString();
+      }
+      // reaching here implies idEnumeration.hasMore() returned true, without
+      // catching an exception.
+      try {
         String id = idEnumeration.next();
         result.append(id, "" + getAttribute(allAttrs, id));
+      } catch (NamingException ne) {
+        log.log(Level.WARNING, "Unexpected NamingException while retrieving "
+            + "attributes from " + dn, ne);
       }
-      idEnumeration.close();
-    } catch (NamingException ne) {
-      result.append("NamingException", ne.toString());
     }
-    return result.toString();
   }
 
   /**

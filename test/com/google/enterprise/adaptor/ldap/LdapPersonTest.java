@@ -193,9 +193,8 @@ public class LdapPersonTest {
     LdapPerson ldapPerson = new LdapPerson(sr);
     assertEquals("user", ldapPerson.getCommonName());
     assertEquals("cn=user,ou=Users,dc=example,dc=com", ldapPerson.getDn());
-    assertEquals("dn = cn=user,ou=Users,dc=example,dc=com,givenName = Test,"
-        + "NamingException = javax.naming.NamingException: expectedException",
-        ldapPerson.toString());
+    assertEquals("dn = cn=user,ou=Users,dc=example,dc=com,givenName = Test"
+        + ",sn = User,cn = user", ldapPerson.toString());
     assertEquals("Name: ", ldapPerson.asDoc("Name: {exception}"));
     HashMap<String, String> expected = new HashMap<String, String>();
     expected.put("cn", "user");
