@@ -383,6 +383,28 @@ public class LdapServerTest {
     assertEquals(1, resultSet.size());
   }
 
+  // compare to testRegularSearch() several pages above
+  @Test
+  public void testGetResponseControlsNullDoesNotThrowNPE() throws Exception {
+    MockLdapContext ldapContext = new MockLdapContext() {
+      @Override
+      public Control[] getResponseControls() throws NamingException {
+        return null;
+      };
+    };
+
+    ldapContext.addSearchResult("basedn", "dn=empty", "attr1", "val1");
+    LdapServer ldapServer = makeMockLdapServer(ldapContext);
+
+    Set<LdapPerson> resultSet = ldapServer.search("basedn", "dn=empty",
+        new String[] { "attr1" }, true);
+    assertEquals(1, resultSet.size());
+    for (LdapPerson lp : resultSet) {
+      assertEquals("dn = cn=name\\ under,basedn,attr1 = val1",
+          lp.toString());
+    }
+  }
+
   @Test
   public void testScanAllUnavailable() throws Exception {
     MockLdapContext ldapContext = new MockLdapContext();
