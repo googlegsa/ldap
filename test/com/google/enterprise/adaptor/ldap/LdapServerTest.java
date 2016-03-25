@@ -560,7 +560,7 @@ public class LdapServerTest {
       protected Set<LdapPerson> search(String baseDN, String filter,
           String[] attributes, boolean validateAttributes)
           throws InterruptedNamingException {
-        return Sets.newHashSet();
+        return Sets.newHashSet((LdapPerson) null);
       }
     };
 
