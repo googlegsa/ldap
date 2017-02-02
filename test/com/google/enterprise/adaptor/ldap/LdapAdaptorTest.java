@@ -412,37 +412,16 @@ public class LdapAdaptorTest {
     MockResponse response = new MockResponse();
     String[] docIdsToTest = new String[] {
         "" /* empty */,
+        "random/relative/URL", /* GSA followed a relative URL */
         "server=0" /* no slash */,
+        "server=00/dn" /* extra zero */,
         "server=1/dn" /* server number too big */,
         "server=-1/dn" /* server number too small */
     };
     for (String docId : docIdsToTest) {
-      try {
-        ldapAdaptor.getDocContent(new MockRequest(new DocId(docId)), response);
-        fail("did not catch expected IllegalArgumentException");
-      } catch (IllegalArgumentException iae) {
-        assertEquals("invalid DocId: DocId(" + docId + ")", iae.getMessage());
-      }
+      ldapAdaptor.getDocContent(new MockRequest(new DocId(docId)), response);
+      assertTrue(response.notFound);
     }
-  }
-
-  // not included in testGetDocContent_InvalidDocIds() because this case does
-  // not throw an exception, it simply returns a 404.
-  @Test
-  public void testGetDocContentInvalidDocId_serverNumberHasLeadingZero()
-      throws Exception {
-    final FakeAdaptor ldapAdaptor = new FakeAdaptor();
-    AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
-    Map<String, String> configEntries = defaultConfigEntriesForOneServer();
-    pushGroupDefinitions(ldapAdaptor, configEntries, pusher, /*fullPush=*/ true,
-        /*init=*/ true);
-    // the above calls LdapAdaptor.init() with the specified config.
-    assertEquals(1, pusher.getRecords().size());
-    MockResponse response = new MockResponse();
-    ldapAdaptor.getDocContent(new MockRequest(
-        // below is the "expected DocID" except for the additional 0 in server.
-        new DocId("server=00/cn=name\\ under,basedn")), response);
-    assertTrue(response.notFound);
   }
 
   @Test
