@@ -198,11 +198,16 @@ public class LdapAdaptor extends AbstractAdaptor {
       log.config("ldap.readTimeoutSecs set to default of 90 sec.");
     }
     try {
-      if (Long.parseLong(timeInSeconds) <= 0) {
-        throw new InvalidConfigurationException("invalid (too small) value for "
-            + "ldap.readTimeoutSecs: " + timeInSeconds + "");
+      // according to com.sun.jndi.ldap.connect.timeout documentation,
+      // An integer less than or equal to zero means to use the network
+      // protocol's (i.e., TCP's) timeout value.
+      if (Long.parseLong(timeInSeconds) > (Integer.MAX_VALUE / 1000)) {
+        log.warning("invalid (too big) value for ldap.readTimeoutSecs, "
+            + "it has been set to the maximum value.");
+        return Integer.MAX_VALUE;
+      } else {
+        return 1000L * Long.parseLong(timeInSeconds);
       }
-      return 1000L * Long.parseLong(timeInSeconds);
     } catch (NumberFormatException e) {
       throw new InvalidConfigurationException("invalid (non-numeric) value for "
           + "ldap.readTimeoutSecs: " + timeInSeconds + "");
