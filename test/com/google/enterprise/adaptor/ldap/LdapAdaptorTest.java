@@ -284,18 +284,29 @@ public class LdapAdaptorTest {
   }
 
   @Test
+  public void testFakeAdaptorInitOKWithCustomValue()
+      throws Exception {
+    final FakeAdaptor ldapAdaptor = new FakeAdaptor();
+    AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
+    Map<String, String> configEntries = defaultConfigEntries();
+    configEntries.put("ldap.readTimeoutSecs", "1");
+    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
+        /*fullPush=*/ true, /*init=*/ true);
+    configEntries.put("ldap.readTimeoutSecs", "-1");
+    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
+        /*fullPush=*/ true, /*init=*/ true);
+    configEntries.put("ldap.readTimeoutSecs",
+        Integer.toString(Integer.MAX_VALUE / 1000));
+    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
+        /*fullPush=*/ true, /*init=*/ true);
+  }
+
+  @Test
   public void testFakeAdaptorInitThrowsICEWhenReadTimeoutSecsInvalid()
       throws Exception {
     final FakeAdaptor ldapAdaptor = new FakeAdaptor();
     AccumulatingDocIdPusher pusher = new AccumulatingDocIdPusher();
     Map<String, String> configEntries = defaultConfigEntries();
-    configEntries.put("ldap.readTimeoutSecs", "-1");
-    try {
-      pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
-          /*fullPush=*/ true, /*init=*/ true);
-    } catch (InvalidConfigurationException ice) {
-      assertTrue(ice.getMessage().startsWith("invalid (too small) value"));
-    }
     configEntries.put("ldap.readTimeoutSecs", "bogus");
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
@@ -303,6 +314,10 @@ public class LdapAdaptorTest {
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("invalid (non-numeric) value"));
     }
+    configEntries.put("ldap.readTimeoutSecs",
+        Integer.toString((Integer.MAX_VALUE / 1000) + 1));
+    pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
+          /*fullPush=*/ true, /*init=*/ true);
   }
 
   @Test
