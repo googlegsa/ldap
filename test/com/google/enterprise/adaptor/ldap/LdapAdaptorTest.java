@@ -80,6 +80,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("host not specified"));
       assertTrue(ice.getMessage().endsWith("item server1"));
@@ -88,6 +89,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("host not specified"));
       assertTrue(ice.getMessage().endsWith("item server1"));
@@ -104,6 +106,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("invalid connectionMethod:"));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -134,6 +137,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapBindingDistinguishedName "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -142,6 +146,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapBindingDistinguishedName "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -158,6 +163,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapBindingPassword not "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -166,6 +172,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapBindingPassword not "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -182,6 +189,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapSearchBase not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -190,6 +198,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("ldapSearchBase not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -206,6 +215,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("userFilter not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -214,6 +224,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("userFilter not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -230,6 +241,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("attributes not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -238,6 +250,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("attributes not specified "));
       assertTrue(ice.getMessage().endsWith("for host localhost"));
@@ -311,6 +324,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertTrue(ice.getMessage().startsWith("invalid (non-numeric) value"));
     }
@@ -329,18 +343,21 @@ public class LdapAdaptorTest {
     FakeAdaptor.validateDisplayTemplate("{text} {with} {balanced} {braces}");
     try {
       FakeAdaptor.validateDisplayTemplate("{brace that doesn't end");
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertEquals("invalid value for displayTemplate: {brace that doesn't end "
           + "found at position 23", ice.getMessage());
     }
     try {
       FakeAdaptor.validateDisplayTemplate("brace that doesn't start}");
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertEquals("invalid value for displayTemplate: brace that doesn't "
           + "start} found at position 25", ice.getMessage());
     }
     try {
       FakeAdaptor.validateDisplayTemplate("{{double braces}}");
+      fail("Expected an InvalidConfigurationException");
     } catch (InvalidConfigurationException ice) {
       assertEquals("invalid value for displayTemplate: {{double braces}} "
           + "found at position 2", ice.getMessage());
@@ -405,6 +422,7 @@ public class LdapAdaptorTest {
     try {
       pushGroupDefinitions(ldapAdaptor, configEntries, pusher,
           /*fullPush=*/ true, /*init=*/ true);
+      fail("Expected an IOException");
     } catch (IOException ioe) {
       assertEquals("Could not get entities from the following server(s): "
           + "localhost", ioe.getMessage());
