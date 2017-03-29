@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
+import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InterruptedNamingException;
 import javax.naming.NamingEnumeration;
@@ -269,8 +270,9 @@ class LdapServer {
       ensureConnectionIsCurrent();
       byte[] cookie = null;
       do {
-        NamingEnumeration<SearchResult> ldapResults =
-            ldapContext.search(baseDN, filter, searchCtls);
+        // Use a single-component CompositeName to avoid splitting on "/".
+        NamingEnumeration<SearchResult> ldapResults = ldapContext.search(
+            new CompositeName().add(baseDN), filter, searchCtls);
         while (ldapResults.hasMoreElements()) {
           SearchResult sr = ldapResults.next();
           try {

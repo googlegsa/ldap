@@ -67,8 +67,18 @@ public class MockLdapContext extends InitialLdapContext {
   }
 
   /** Returns a <code>NamingEnumeration</code> of <code>SearchResult</code>s */
-  public NamingEnumeration<SearchResult> search(String base, String filter,
+  @Override
+  public NamingEnumeration<SearchResult> search(Name baseName, String filter,
       SearchControls searchControls) throws NamingException {
+    // Ensure that baseName did not get split into pieces on "/".
+    if (baseName.size() != 1) {
+      throw new NamingException("Name does not have a single component: "
+          + baseName);
+    }
+    // CompositeName.toString quotes names with / and other chars in them.
+    // Just get the first (and only) component from the name instead.
+    String base = baseName.get(0);
+
     Vector<SearchResult> results = new Vector<SearchResult>();
     SearchResult currentResult = null;
     for (String attribute : searchControls.getReturningAttributes()) {
