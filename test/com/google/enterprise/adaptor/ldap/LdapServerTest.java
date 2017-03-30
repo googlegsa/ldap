@@ -187,6 +187,21 @@ public class LdapServerTest {
     }
   }
 
+  @Test
+  public void testSearchWithSlashInName() throws Exception {
+    MockLdapContext ldapContext = new MockLdapContext();
+    ldapContext.addSearchResult("dc=Either/Or", "filter", "attr1", "val1");
+    LdapServer ldapServer = makeMockLdapServer(ldapContext);
+
+    Set<LdapPerson> resultSet = ldapServer.search("dc=Either/Or", "filter",
+        new String[] { "attr1" }, true);
+    assertEquals(1, resultSet.size());
+    for (LdapPerson lp : resultSet) {
+      assertEquals("dn = cn=name\\ under,dc=Either/Or,attr1 = val1",
+          lp.toString());
+    }
+  }
+
   /*
    * Expected behavior: LdapServer searches for an LdapPerson;
    * LdapContext throws a NamingException;
@@ -196,7 +211,7 @@ public class LdapServerTest {
   public void testSearchThrowsNamingException() throws Exception {
     MockLdapContext ldapContext = new MockLdapContext() {
       @Override
-      public NamingEnumeration<SearchResult> search(String base, String filter,
+      public NamingEnumeration<SearchResult> search(Name base, String filter,
         SearchControls searchControls) throws NamingException {
         if (!("dn=empty".equals(filter))) {
           return super.search(base, filter, searchControls);
@@ -225,7 +240,7 @@ public class LdapServerTest {
         new MockLdapContext.SearchResultsNamingEnumeration(resultVector);
     MockLdapContext ldapContext = new MockLdapContext() {
       @Override
-      public NamingEnumeration<SearchResult> search(String base, String filter,
+      public NamingEnumeration<SearchResult> search(Name base, String filter,
           SearchControls searchControls) throws NamingException {
         return badResults;
       }
