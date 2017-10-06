@@ -149,7 +149,7 @@ public class LdapPersonTest {
     assertEquals("Name: Test User", ldapPerson.asDoc("Name: {givenName} {sn}"));
     assertEquals("Name: ", ldapPerson.asDoc("Name: {name}"));
     assertEquals("cn: user<br>givenName: Test<br>sn: User<br>",
-        ldapPerson.asDoc(ldapPerson.allAttributesDisplayTemplate(
+        ldapPerson.asDoc(LdapPerson.allAttributesDisplayTemplate(
             "cn,givenName,sn")));
     assertEquals("", ldapPerson.asDoc("{missing}"));
     try {

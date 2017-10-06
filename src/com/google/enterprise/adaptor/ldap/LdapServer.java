@@ -391,16 +391,9 @@ class LdapServer {
       log.exiting("LdapServer", "fetchOne", 0);
       return null;
     } else if (results.size() == 1) {
-      Object[] personArray = (Object[]) results.toArray();
-      Object person = personArray[0];
-      if (person instanceof LdapPerson) {
-        log.exiting("LdapServer", "fetchOne", person);
-        return (LdapPerson) person;
-      } else {
-        log.exiting("LdapServer", "fetchOne", 1);
-        throw new IllegalArgumentException("non-LdapPerson found at " + dn
-            + ":" + person.toString());
-      }
+      LdapPerson person = results.iterator().next();
+      log.exiting("LdapServer", "fetchOne", person);
+      return person;
     } else {
       log.exiting("LdapServer", "fetchOne", 2);
       throw new IllegalArgumentException("More than one person found at "
