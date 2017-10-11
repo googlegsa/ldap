@@ -393,7 +393,11 @@ class LdapServer {
     } else if (results.size() == 1) {
       LdapPerson person = results.iterator().next();
       log.exiting("LdapServer", "fetchOne", person);
-      return person;
+      if (person == null) {
+        throw new NullPointerException("Null LdapPerson found at " + dn);
+      } else {
+        return person;
+      }
     } else {
       log.exiting("LdapServer", "fetchOne", 2);
       throw new IllegalArgumentException("More than one person found at "
