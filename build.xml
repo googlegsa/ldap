@@ -27,7 +27,7 @@
   <property name="compile.java.target" value="7"/>
   <property name="compile.java.bootclasspath" value="${build.bootclasspath}"/>
   <!-- The build.bootclasspath property, if set, must match the Java version
-       set in compile.java.version. To detect errors in build.bootclasspath,
+       set in compile.java.source. To detect errors in build.bootclasspath,
        set compile.java.newerClassname to a class that was added in
        the immediately following release of Java. For example, for
        "6", pick a class added in Java 7. -->
