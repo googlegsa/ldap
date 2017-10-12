@@ -556,17 +556,13 @@ public class LdapServerTest {
       }
     };
 
-    try {
-      LdapPerson fetched = ldapServer.fetchOne("ou=basedn");
-      fail("Did not catch expected IllegalArgumentException.");
-    } catch (IllegalArgumentException e) {
-      assertTrue(e.getMessage().contains("More than one person found"));
-    }
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("More than one person found at ou=basedn");
+    LdapPerson fetched = ldapServer.fetchOne("ou=basedn");
   }
 
   @Test
-  public void testFetchOneNonLdapPersonResult() throws Exception {
-    thrown.expect(NullPointerException.class);
+  public void testFetchOneNullLdapPersonResult() throws Exception {
     MockLdapContext ldapContext = new MockLdapContext();
     LdapServer ldapServer = new LdapServer("localhost", "nickname", "ou=basedn",
         "userFilter", "attr1,cn,dn" /* attributes */,
@@ -579,6 +575,8 @@ public class LdapServerTest {
       }
     };
 
+    thrown.expect(NullPointerException.class);
+    thrown.expectMessage("Null LdapPerson found at ou=basedn");
     LdapPerson fetched = ldapServer.fetchOne("ou=basedn");
   }
 
