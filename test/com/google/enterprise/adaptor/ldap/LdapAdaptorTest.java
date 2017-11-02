@@ -676,7 +676,7 @@ public class LdapAdaptorTest {
     ts3.setMessage("foo");
     assertFalse(ts1.equals(ts3));
     assertFalse(ts1.equals(ts2));
-    assertFalse(ts1.equals(new Integer(42)));
+    assertFalse(ts1.equals(Integer.valueOf(42)));
   }
 
   @Test
