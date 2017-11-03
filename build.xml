@@ -123,7 +123,7 @@ lib/plexi submodule or add the the command line argument
       classname="${compile.java.newerClassname}"
       classpath="${compile.java.bootclasspath}" ignoresystemclasses="true"/>
     <fail if="compile.java.isNewer">
-      Error: build.bootclasspath is newer than JDK ${compile.java.source}.
+      Error: build.bootclasspath is newer than JDK ${compile.java.version}.
     </fail>
 
     <javac srcdir="${src.dir}" destdir="${build-src.dir}" debug="true"
