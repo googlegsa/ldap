@@ -20,11 +20,10 @@ package com.google.enterprise.adaptor;
  * <p>This code lives in adaptor package instead of adaptor.ldap package
  * to work around visibility of <code>Config</code> class.
  * <p>It also replaces the TestHelper class from the library (by taking the
- * same package and class names.  A very similar thing is done in the AD and
- * sharepoint adaptors.  (See TODO comment below this comment block.)
+ * same package and class names.
  */
- // TODO(myk|siyugu): Refactor all the TestHelper replacement classes back into
- // the main library's TestHelper class.
+// TODO(jlacey): Remove this when the v4.1.4 library is available. See
+// https://github.com/googlegsa/activedirectory/commit/d5d409d
 public class TestHelper {
   // Prevent instantiation
   private TestHelper() {}
